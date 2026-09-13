@@ -1,21 +1,34 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* Light mode defaults */
+  --background: #F7F4EF;
+  --foreground: #24313A;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --header-bg: #173F4A;
+  --header-text: #FFFAF2;
+  --link-hover: #E07A5F;
+
+  --card-bg: #FFFDF8;
+  --card-border: #D8CFC2;
+  --card-title: #173F4A;
+  --card-meta: #5F6B70;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Dark mode overrides */
+    --background: #17252B;
+    --foreground: #F6EFE6;
+
+    --header-bg: #102F38;
+    --header-text: #FFFAF2;
+    --link-hover: #F2A07E;
+
+    --card-bg: #21343A;
+    --card-border: #46606A;
+    --card-title: #FFFAF2;
+    --card-meta: #C4D0D0;
   }
 }
 
@@ -23,4 +36,100 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.home-page {
+  min-height: 100vh;
+  background: var(--background);
+}
+
+.home-intro {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 1rem;
+}
+
+.home-intro h1 {
+  color: var(--card-title);
+}
+
+.home-intro p {
+  color: var(--foreground);
+}
+
+/* Example usage */
+header {
+  background: var(--header-bg);
+  color: var(--header-text);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem;
+  margin: 0 0 1rem 0;
+}
+
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-grow: 1;
+  padding: 1rem;
+}
+
+.nav-links a {
+  color: var(--header-text);
+  text-decoration: none;
+}
+
+.nav-links ul {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+.nav-links a:hover {
+  color: var(--link-hover);
+}
+
+.meeting-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.meeting-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.meeting-card h2 {
+  color: var(--card-title);
+}
+
+.meeting-card p {
+  color: var(--card-meta);
+}
+
+.meeting-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+
+Footer {
+  background: var(--header-bg);
+  color: var(--header-text);
+  text-align: center;
+  padding: 1rem;
+  margin-top: 2rem;
 }
