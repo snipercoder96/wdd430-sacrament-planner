@@ -6,7 +6,7 @@ export default function NavLinks() {
     const pathname = usePathname();
     const navLinks = [
         { to: "/", label: "Home" },
-        { to: "/planner", label: "Planner" },
+        { to: "/meetings", label: "Meetings" },
         { to: "/about", label: "About" },
     ];
 
