@@ -7,6 +7,19 @@ import { getMeetings } from "../../lib/meetings-db";
 export default function CurrentMeetingPage() {
     const currentMeeting = getMeetings()[0];
 
+    if (!currentMeeting) {
+        return (
+            <main className="meetings-content">
+                <div className="meetings-heading">
+                    <p className="section-eyebrow">Planner</p>
+                    <h1>Current meeting</h1>
+                    <p>No meeting available.</p>
+                </div>
+                <Link className="text-link" href="/meetings">View all meetings</Link>
+            </main>
+        );
+    }
+
     return (
         <main className="meetings-content">
             <div className="meetings-heading">
