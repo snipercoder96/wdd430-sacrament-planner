@@ -32,6 +32,11 @@
   }
 }
 
+
+/*⚠️ - Split into css files
+  * - Inline quite difficult to maintain
+ */
+
 body {
   background: var(--background);
   color: var(--foreground);
