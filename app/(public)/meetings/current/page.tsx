@@ -1,11 +1,22 @@
 import Link from "next/link";
-import MeetingCard from "../../components/MeetingCards";
-import { getMeetings } from "../../lib/meetings-db";
+import { redirect } from "next/navigation";
+import MeetingCard from "../../../components/MeetingCards";
+import { getMeetingByDate } from "../../../lib/meetings-db";
 
+export const dynamic = "force-dynamic";
 
-// ❌ No it doesnt have redirect()
-export default function CurrentMeetingPage() {
-    const currentMeeting = getMeetings()[0];
+function getThisSunday(): string {
+    const date = new Date();
+    date.setDate(date.getDate() - date.getDay());
+    return date.toISOString().slice(0, 10);
+}
+
+export default async function CurrentMeetingPage() {
+    const currentMeeting = await getMeetingByDate(getThisSunday());
+
+    if (currentMeeting) {
+        redirect(`/meetings/${currentMeeting.id}`);
+    }
 
     if (!currentMeeting) {
         return (
@@ -13,7 +24,7 @@ export default function CurrentMeetingPage() {
                 <div className="meetings-heading">
                     <p className="section-eyebrow">Planner</p>
                     <h1>Current meeting</h1>
-                    <p>No meeting available.</p>
+                    <p>No meeting scheduled for this Sunday.</p>
                 </div>
                 <Link className="text-link" href="/meetings">View all meetings</Link>
             </main>

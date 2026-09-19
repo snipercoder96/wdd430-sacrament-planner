@@ -1,14 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import MeetingDetail from "../../components/MeetingDetail";
-import type { SacramentMeeting } from "../../lib/types";
-import { getApiUrl } from "../../lib/server-api";
+import MeetingDetail from "../../../components/MeetingDetail";
+import type { SacramentMeeting } from "../../../lib/types";
+import { getApiUrl } from "../../../lib/server-api";
 
-
-// This resolves to a promise that resolves to an object with an id property of type string. The id is extracted from the URL parameters and used to fetch the corresponding meeting data. If no meeting is found, the notFound function is called to handle the error.
-// And returns a JSX element that displays the meeting details using the MeetingCard component, along with a link to go back to the list of all meetings.
-export default async function MeetingPage({ params,
-}: {
+export default async function MeetingPage({ params }: {
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
@@ -23,7 +19,7 @@ export default async function MeetingPage({ params,
     if (!response.ok) {
         throw new Error("Unable to load meeting.");
     }
-    // ✅ Correctly passes to  MeetingDetail.
+
     const meeting: SacramentMeeting = await response.json();
 
     return (
