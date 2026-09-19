@@ -2,8 +2,8 @@ import MeetingDetails from "./components/MeetingDetails";
 import { getMeetings } from "./lib/meetings-db";
 import Image from "next/image";
 
-export default function Home() {
-  const meetings = getMeetings(); // ✅ app/meetings/page.tsx fetches /api/meetings and pass typed data to MeetingCard
+export default async function Home() {
+  const meetings = await getMeetings();
 
   return (
     <div className="home-page">

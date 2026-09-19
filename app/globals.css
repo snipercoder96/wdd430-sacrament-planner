@@ -208,6 +208,38 @@ nav {
   padding: 1rem;
 }
 
+.meeting-search {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 32rem;
+  margin-bottom: 1.5rem;
+}
+
+.meeting-search label {
+  font-weight: 700;
+}
+
+.meeting-search input {
+  border: 1px solid var(--card-border);
+  border-radius: 0.25rem;
+  background: var(--card-bg);
+  color: var(--foreground);
+  padding: 0.7rem 0.8rem;
+  font: inherit;
+}
+
+.meeting-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.meeting-pagination .text-link {
+  margin: 0;
+}
+
 
 Footer {
   background: var(--header-bg);
