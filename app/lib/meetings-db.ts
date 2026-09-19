@@ -2,7 +2,7 @@ import { neon } from '@neondatabase/serverless';
 import type { SacramentMeeting } from './types';
 
 const databaseUrl =
-    process.env.SACRAMENT_DB_DATABASE_URL ?? process.env.DATABASE_URL;
+    process.env.SACRAMENT_DATABASE_URL ?? process.env.DATABASE_URL;
 
 if (!databaseUrl) {
     throw new Error(
