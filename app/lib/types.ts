@@ -1,3 +1,5 @@
+// ✅ Yes it does succesfully export all required props.
+//------------
 export type MeetingType =
     | 'testimony'
     | 'fast'
@@ -19,6 +21,8 @@ export interface SpeakerItem {
 export interface WardBusinessItem {
     description: string;
 }
+
+//---------------
 
 // this collects all the relevant interface above into a single interface for the sacrament meeting
 export interface SacramentMeeting {

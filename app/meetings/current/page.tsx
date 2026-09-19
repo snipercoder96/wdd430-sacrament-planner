@@ -2,8 +2,23 @@ import Link from "next/link";
 import MeetingCard from "../../components/MeetingCards";
 import { getMeetings } from "../../lib/meetings-db";
 
+
+// ❌ No it doesnt have redirect()
 export default function CurrentMeetingPage() {
     const currentMeeting = getMeetings()[0];
+
+    if (!currentMeeting) {
+        return (
+            <main className="meetings-content">
+                <div className="meetings-heading">
+                    <p className="section-eyebrow">Planner</p>
+                    <h1>Current meeting</h1>
+                    <p>No meeting available.</p>
+                </div>
+                <Link className="text-link" href="/meetings">View all meetings</Link>
+            </main>
+        );
+    }
 
     return (
         <main className="meetings-content">

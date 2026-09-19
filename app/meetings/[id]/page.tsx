@@ -23,7 +23,7 @@ export default async function MeetingPage({ params,
     if (!response.ok) {
         throw new Error("Unable to load meeting.");
     }
-
+    // ✅ Correctly passes to  MeetingDetail.
     const meeting: SacramentMeeting = await response.json();
 
     return (
