@@ -31,13 +31,13 @@ export interface SacramentMeeting {
     meetingType: MeetingType;
     presiding: string;
     conducting: string;
-    announcements?: string[];
+    announcements: string[] | null;
     openingHymn: Hymn;
     openingPrayer: string;
-    wardBusiness: WardBusinessItem[];
-    stakeBusiness: boolean;
+    wardBusiness: WardBusinessItem[] | null;
+    stakeBusiness: boolean | null;
     sacramentHymn: Hymn;
-    speakers: SpeakerItem[];
+    speakers: SpeakerItem[] | null;
     closingHymn: Hymn;
     closingPrayer: string;
 }

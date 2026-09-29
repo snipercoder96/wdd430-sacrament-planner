@@ -13,16 +13,16 @@ export default function MeetingDetail({ meeting }: { meeting: SacramentMeeting }
 
             <h3>Ward business</h3>
             <ul>
-                {meeting.wardBusiness.length > 0 ? meeting.wardBusiness.map((item) => (
+                {(meeting.wardBusiness ?? []).length > 0 ? meeting.wardBusiness?.map((item) => (
                     <li key={item.description}>{item.description}</li>
                 )) : <li>None</li>}
             </ul>
 
-            <p><strong>Stake business:</strong> {meeting.stakeBusiness ? "Yes" : "No"}</p>
+            <p><strong>Stake business:</strong> {meeting.stakeBusiness === null ? "Not specified" : meeting.stakeBusiness ? "Yes" : "No"}</p>
 
             <h3>Speakers and musical numbers</h3>
             <ul>
-                {meeting.speakers.map((speaker) => (
+                {(meeting.speakers ?? []).map((speaker) => (
                     <li key={`${speaker.name}-${speaker.topic}`}>
                         {speaker.name}{speaker.topic ? `: ${speaker.topic}` : ""} ({speaker.type})
                     </li>
