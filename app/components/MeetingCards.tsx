@@ -1,5 +1,6 @@
 import type { SacramentMeeting } from "../lib/types";
 import Link from "next/link";
+import { deleteMeetingAction } from "../lib/actions";
 
 export default function MeetingCard({ meeting }: { meeting: SacramentMeeting }) {
     return (
@@ -11,6 +12,12 @@ export default function MeetingCard({ meeting }: { meeting: SacramentMeeting }) 
             <Link className="text-link" href={`/meetings/${meeting.id}`}>
                 View full meeting
             </Link>
+            <Link className="text-link" href={`/meetings/${meeting.id}/edit`}>
+                Edit meeting
+            </Link>
+            <form action={deleteMeetingAction.bind(null, meeting.id)}>
+                <button type="submit">Delete meeting</button>
+            </form>
         </div>
     );
 }
