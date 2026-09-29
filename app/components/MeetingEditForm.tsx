@@ -10,7 +10,10 @@ const initialState = {
 };
 
 export default function MeetingEditForm({ meeting }: { meeting: SacramentMeeting }) {
-    const [state, formAction, pending] = useActionState(updateMeetingAction, initialState);
+    const [state, formAction, pending] = useActionState(
+        updateMeetingAction.bind(null, meeting.id),
+        initialState
+    );
     const errorFor = (field: string) => state.errors?.[field] ?? "";
 
     return (
@@ -21,7 +24,7 @@ export default function MeetingEditForm({ meeting }: { meeting: SacramentMeeting
             </div>
 
             <form action={formAction} noValidate className="meeting-form">
-                <input type="hidden" name="id" value={meeting.id} />
+                <p aria-live="polite">{state.message}</p>
 
                 <div>
                     <label htmlFor="date">Date</label>
@@ -54,15 +57,18 @@ export default function MeetingEditForm({ meeting }: { meeting: SacramentMeeting
                 </div>
 
                 <div>
-                    <label>Announcements</label>
+                    <p id="announcements-label">Announcements</p>
                     {(meeting.announcements ?? [""]).map((announcement, index) => (
-                        <input
-                            key={`announcement-${index}`}
-                            name="announcements"
-                            defaultValue={announcement}
-                            aria-invalid={Boolean(errorFor("announcements"))}
-                            aria-describedby="announcements-error"
-                        />
+                        <span key={`announcement-${index}`}>
+                            <label htmlFor={`announcement-${index}`}>Announcement {index + 1}</label>
+                            <input
+                                id={`announcement-${index}`}
+                                name="announcements"
+                                defaultValue={announcement}
+                                aria-invalid={Boolean(errorFor("announcements"))}
+                                aria-describedby="announcements-error"
+                            />
+                        </span>
                     ))}
                     <p id="announcements-error" aria-live="polite">{errorFor("announcements")}</p>
                 </div>
@@ -109,18 +115,21 @@ export default function MeetingEditForm({ meeting }: { meeting: SacramentMeeting
                 </div>
 
                 <div>
-                    <label>Speakers</label>
+                    <p id="speaker-label">Speakers</p>
                     {(meeting.speakers ?? [{ name: "", topic: "", type: "speaker" }]).map((speaker, index) => (
                         <div key={`speaker-${index}`}>
-                            <input name="speakerName" defaultValue={speaker.name} placeholder="Speaker name" />
-                            <input name="speakerTopic" defaultValue={speaker.topic} placeholder="Topic" />
-                            <select name="speakerType" defaultValue={speaker.type}>
+                            <label htmlFor={`speaker-name-${index}`}>Speaker name</label>
+                            <input id={`speaker-name-${index}`} name="speakerName" defaultValue={speaker.name} placeholder="Speaker name" aria-describedby="speakers-error" />
+                            <label htmlFor={`speaker-topic-${index}`}>Topic</label>
+                            <input id={`speaker-topic-${index}`} name="speakerTopic" defaultValue={speaker.topic} placeholder="Topic" aria-describedby="speakers-error" />
+                            <label htmlFor={`speaker-type-${index}`}>Speaker type</label>
+                            <select id={`speaker-type-${index}`} name="speakerType" defaultValue={speaker.type} aria-describedby="speakers-error">
                                 <option value="speaker">Speaker</option>
                                 <option value="musical-number">Musical number</option>
                             </select>
                         </div>
                     ))}
-                    <p aria-live="polite">{errorFor("speakers")}</p>
+                    <p id="speakers-error" aria-live="polite">{errorFor("speakers")}</p>
                 </div>
 
                 <div>

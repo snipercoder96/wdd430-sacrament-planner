@@ -16,9 +16,9 @@ export default function Error({
     return (
         <main style={{ padding: "2rem", textAlign: "center" }}>
             <h2>Something went wrong.</h2>
-            <p>{error.message}</p>
+            <p>Please try again or return to the meetings page.</p>
 
-            <button onClick={() => reset()} style={{ marginTop: "1rem", cursor: "pointer"}}>
+            <button onClick={() => reset()} style={{ marginTop: "1rem", cursor: "pointer" }}>
                 Try again
             </button>
         </main>

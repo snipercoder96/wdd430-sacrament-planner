@@ -1,10 +1,20 @@
 import { notFound } from "next/navigation";
-import MeetingEditForm from "@/app/components/MeetingEditForm";
-import { getMeetingById } from "@/app/lib/meetings-db";
+import MeetingEditForm from "../../../../components/MeetingEditForm";
+import { getMeetingById } from "../../../../lib/meetings-db";
 
-export default async function EditMeetingPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditMeetingPage({
+    params,
+}: {
+    params: Promise<{ id: string }>;
+}) {
     const { id } = await params;
-    const meeting = await getMeetingById(Number(id));
+    const meetingId = Number(id);
+
+    if (!/^\d+$/.test(id) || !Number.isSafeInteger(meetingId)) {
+        notFound();
+    }
+
+    const meeting = await getMeetingById(meetingId);
 
     if (!meeting) {
         notFound();

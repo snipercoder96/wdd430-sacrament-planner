@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { meetingSchema } from "./meeting-schema";
 import { addMeeting, deleteMeeting, updateMeeting } from "./meetings-db";
@@ -57,19 +58,19 @@ function parseMeetingFormData(formData: FormData) {
     };
 }
 
-function buildFormErrorResponse(parsed: { error: { flatten: () => { fieldErrors: Record<string, string[] | undefined> } } }): FormState {
-    const fieldErrors = parsed.error.flatten().fieldErrors;
+function buildFormErrorResponse(parsed: { error: { issues: { path: PropertyKey[]; message: string }[] } }): FormState {
+    const errors = Object.fromEntries(
+        parsed.error.issues.map((issue) => [issue.path.join("."), issue.message])
+    );
 
     return {
-        errors: Object.fromEntries(
-            Object.entries(fieldErrors).map(([key, value]) => [key, value?.[0] ?? ""])
-        ),
+        errors,
         message: "Please fix the highlighted fields.",
     };
 }
 
 export async function createMeetingAction(
-    prevState: FormState,
+    _prevState: FormState,
     formData: FormData
 ): Promise<FormState> {
     const raw = parseMeetingFormData(formData);
@@ -79,23 +80,22 @@ export async function createMeetingAction(
         return buildFormErrorResponse(parsed);
     }
 
-    await addMeeting(parsed.data);
+    try {
+        await addMeeting(parsed.data);
+    } catch (error) {
+        console.error("Failed to create meeting", error);
+        throw new Error("Unable to create the meeting. Please try again.");
+    }
+
+    revalidatePath("/meetings");
     redirect("/meetings");
 }
 
 export async function updateMeetingAction(
-    prevState: FormState,
+    meetingId: number,
+    _prevState: FormState,
     formData: FormData
 ): Promise<FormState> {
-    const meetingId = Number(formData.get("id"));
-
-    if (!Number.isInteger(meetingId)) {
-        return {
-            errors: { id: "Invalid meeting id." },
-            message: "Unable to update meeting.",
-        };
-    }
-
     const raw = parseMeetingFormData(formData);
     const parsed = meetingSchema.safeParse(raw);
 
@@ -103,7 +103,13 @@ export async function updateMeetingAction(
         return buildFormErrorResponse(parsed);
     }
 
-    const updated = await updateMeeting(meetingId, parsed.data);
+    let updated;
+    try {
+        updated = await updateMeeting(meetingId, parsed.data);
+    } catch (error) {
+        console.error("Failed to update meeting", error);
+        throw new Error("Unable to update the meeting. Please try again.");
+    }
 
     if (!updated) {
         return {
@@ -112,10 +118,19 @@ export async function updateMeetingAction(
         };
     }
 
+    revalidatePath("/meetings");
+    revalidatePath(`/meetings/${meetingId}`);
     redirect(`/meetings/${meetingId}`);
 }
 
 export async function deleteMeetingAction(meetingId: number) {
-    await deleteMeeting(meetingId);
+    try {
+        await deleteMeeting(meetingId);
+    } catch (error) {
+        console.error("Failed to delete meeting", error);
+        throw new Error("Unable to delete the meeting. Please try again.");
+    }
+
+    revalidatePath("/meetings");
     redirect("/meetings");
 }

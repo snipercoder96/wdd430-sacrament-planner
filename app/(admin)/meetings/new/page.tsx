@@ -24,6 +24,7 @@ export default function NewMeetingPage() {
             </div>
 
             <form action={formAction} noValidate className="meeting-form">
+                <p aria-live="polite">{state.message}</p>
                 <div>
                     <label htmlFor="date">Date</label>
                     <input
@@ -85,10 +86,13 @@ export default function NewMeetingPage() {
                 </div>
 
                 <div>
-                    <label>Announcements</label>
-                    <input name="announcements" aria-invalid={Boolean(errorFor("announcements"))} aria-describedby="announcements-error" />
-                    <input name="announcements" aria-invalid={Boolean(errorFor("announcements"))} aria-describedby="announcements-error" />
-                    <input name="announcements" aria-invalid={Boolean(errorFor("announcements"))} aria-describedby="announcements-error" />
+                    <p id="announcements-label">Announcements</p>
+                    <label htmlFor="announcement-1">Announcement 1</label>
+                    <input id="announcement-1" name="announcements" aria-invalid={Boolean(errorFor("announcements"))} aria-describedby="announcements-error" />
+                    <label htmlFor="announcement-2">Announcement 2</label>
+                    <input id="announcement-2" name="announcements" aria-invalid={Boolean(errorFor("announcements"))} aria-describedby="announcements-error" />
+                    <label htmlFor="announcement-3">Announcement 3</label>
+                    <input id="announcement-3" name="announcements" aria-invalid={Boolean(errorFor("announcements"))} aria-describedby="announcements-error" />
                     <p id="announcements-error" aria-live="polite">
                         {errorFor("announcements")}
                     </p>
@@ -187,14 +191,17 @@ export default function NewMeetingPage() {
                 </div>
 
                 <div>
-                    <label>Speaker(s)</label>
-                    <input name="speakerName" placeholder="Speaker name" />
-                    <input name="speakerTopic" placeholder="Topic" />
-                    <select name="speakerType">
+                    <p id="speaker-label">Speaker(s)</p>
+                    <label htmlFor="speaker-name-1">Speaker name</label>
+                    <input id="speaker-name-1" name="speakerName" placeholder="Speaker name" aria-describedby="speakers-error" />
+                    <label htmlFor="speaker-topic-1">Topic</label>
+                    <input id="speaker-topic-1" name="speakerTopic" placeholder="Topic" aria-describedby="speakers-error" />
+                    <label htmlFor="speaker-type-1">Speaker type</label>
+                    <select id="speaker-type-1" name="speakerType" aria-describedby="speakers-error">
                         <option value="speaker">Speaker</option>
                         <option value="musical-number">Musical number</option>
                     </select>
-                    <p aria-live="polite">{errorFor("speakers")}</p>
+                    <p id="speakers-error" aria-live="polite">{errorFor("speakers")}</p>
                 </div>
 
                 <div>
