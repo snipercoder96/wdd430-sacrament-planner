@@ -29,11 +29,6 @@ export default async function MeetingPage({ params }: {
                 <p className="section-eyebrow">Meeting details</p>
                 <h1>{meeting.meetingType} meeting</h1>
             </div>
-            <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-                <Link className="text-link" href={`/meetings/${meeting.id}/edit`}>
-                    Edit meeting
-                </Link>
-            </div>
             <MeetingDetail meeting={meeting} />
         </main>
     );
