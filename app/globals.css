@@ -161,6 +161,28 @@ nav {
   padding: 1rem;
 }
 
+.sign-out-button {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--header-text);
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--header-text);
+  font: inherit;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.sign-out-button:hover {
+  background: var(--link-hover);
+  border-color: var(--link-hover);
+}
+
+.sign-out-button:focus-visible {
+  outline: 3px solid var(--link-hover);
+  outline-offset: 2px;
+}
+
 .nav-links a {
   color: var(--header-text);
   text-decoration: none;
@@ -311,6 +333,67 @@ nav {
 .meeting-form button:focus {
   outline: 3px solid rgba(23, 63, 74, 0.25);
   outline-offset: 2px;
+}
+
+.sign-in-page {
+  max-width: 32rem;
+}
+
+.sign-in-form {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.5rem;
+}
+
+.sign-in-form>div {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.sign-in-form label {
+  color: var(--card-title);
+  font-weight: 700;
+}
+
+.sign-in-form input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.75rem 0.8rem;
+  border: 1px solid var(--card-border);
+  border-radius: 0.25rem;
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+}
+
+.sign-in-form button {
+  width: fit-content;
+  padding: 0.7rem 1rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: var(--header-bg);
+  color: var(--header-text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sign-in-form button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.sign-in-form :is(input, button):focus-visible {
+  outline: 3px solid var(--link-hover);
+  outline-offset: 2px;
+}
+
+.sign-in-form [role="alert"] {
+  margin: 0;
+  color: #9b2c2c;
 }
 
 .meeting-pagination {

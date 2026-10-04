@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import MeetingDetails from "../../components/MeetingDetails";
 import MeetingPagination from "../../components/Pagination";
 import MeetingSearch from "../../components/MeetingSearch";
 import { getMeetings, getMeetingsTotalPages } from "../../lib/meetings-db";
+
+export const metadata: Metadata = {
+    title: "All Meetings",
+    description:
+        "Browse sacrament meeting dates, assignments, speakers, and program details.",
+};
 
 type MeetingsPageProps = {
     searchParams: Promise<{

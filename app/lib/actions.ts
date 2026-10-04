@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { auth, signIn } from "../../auth";
+import { AuthError } from "next-auth";
 import { meetingSchema } from "./meeting-schema";
 import { addMeeting, deleteMeeting, updateMeeting } from "./meetings-db";
 
@@ -9,6 +11,13 @@ export type FormState = {
     errors?: Record<string, string>;
     message?: string;
 };
+
+async function requireAuthenticatedUser(): Promise<void> {
+    const session = await auth();
+    if (!session?.user) {
+        redirect("/auth/signin");
+    }
+}
 
 function parseMeetingFormData(formData: FormData) {
     const announcementValues = formData.getAll("announcements")
@@ -73,6 +82,8 @@ export async function createMeetingAction(
     _prevState: FormState,
     formData: FormData
 ): Promise<FormState> {
+    await requireAuthenticatedUser();
+
     const raw = parseMeetingFormData(formData);
     const parsed = meetingSchema.safeParse(raw);
 
@@ -96,6 +107,8 @@ export async function updateMeetingAction(
     _prevState: FormState,
     formData: FormData
 ): Promise<FormState> {
+    await requireAuthenticatedUser();
+
     const raw = parseMeetingFormData(formData);
     const parsed = meetingSchema.safeParse(raw);
 
@@ -124,6 +137,8 @@ export async function updateMeetingAction(
 }
 
 export async function deleteMeetingAction(meetingId: number) {
+    await requireAuthenticatedUser();
+
     try {
         await deleteMeeting(meetingId);
     } catch (error) {
@@ -133,4 +148,26 @@ export async function deleteMeetingAction(meetingId: number) {
 
     revalidatePath("/meetings");
     redirect("/meetings");
+}
+
+// This function is used to handle the sign-in form submission on the server side. It attempts to sign in the user using the provided credentials and returns an error message if the sign-in fails.
+// It is used in the SignInForm component to handle the form submission and display any error messages to the user.
+
+export async function authenticate(
+    _prevState: string | undefined,
+    formData: FormData
+): Promise<string | undefined> {
+    try {
+        await signIn("credentials", formData);
+    } catch (error) {
+        if (error instanceof AuthError) {
+            if (error.type === "CredentialsSignin") {
+                return "Invalid email or password.";
+            }
+
+            return "Unable to sign in. Please try again.";
+        }
+
+        throw error;
+    }
 }
