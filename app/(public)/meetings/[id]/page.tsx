@@ -1,27 +1,23 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import MeetingDetail from "../../../components/MeetingDetail";
+import { getMeetingById } from "../../../lib/meetings-db";
 import type { SacramentMeeting } from "../../../lib/types";
-import { getApiUrl } from "../../../lib/server-api";
 import { auth } from "@/auth";
 
 export default async function MeetingPage({ params }: {
     params: Promise<{ id: string }>;
 }) {
     const { id } = await params;
-    const response = await fetch(await getApiUrl(`/api/meetings/${id}`), {
-        cache: "no-store",
-    });
-
-    if (response.status === 404) {
+    if (!/^\d+$/.test(id) || !Number.isSafeInteger(Number(id))) {
         notFound();
     }
 
-    if (!response.ok) {
-        throw new Error("Unable to load meeting.");
+    const meeting: SacramentMeeting | null = await getMeetingById(Number(id));
+    if (!meeting) {
+        notFound();
     }
 
-    const meeting: SacramentMeeting = await response.json();
     const session = await auth();
 
     return (

@@ -1,9 +1,17 @@
+import Link from "next/link";
+import { auth } from "@/auth";
 import MeetingDetails from "./components/MeetingDetails";
 import { getMeetings } from "./lib/meetings-db";
 import Image from "next/image";
 
-export default async function Home() {
-  const meetings = await getMeetings();
+type HomeProps = {
+  searchParams: Promise<{ access?: string | string[] }>;
+};
+
+export default async function Home({ searchParams }: HomeProps) {
+  const [session, params] = await Promise.all([auth(), searchParams]);
+  const access = Array.isArray(params.access) ? params.access[0] : params.access;
+  const meetings = session?.user ? await getMeetings() : [];
 
   return (
     <div className="home-page">
@@ -23,7 +31,27 @@ export default async function Home() {
           />
         </div>
       </div>
-      <MeetingDetails meetings={meetings} />
+      {!session?.user ? (
+        <section className="meetings-content" aria-live="polite">
+          {access === "signin" && (
+            <p role="status">
+              Sign in or create an account to view meetings.
+            </p>
+          )}
+          <p>Meeting schedules are available to signed-in users.</p>
+          <p>
+            <Link className="text-link" href="/auth/signin">Sign in</Link>
+            {" or "}
+            <Link className="text-link" href="/auth/signup">create an account</Link>
+            {" to continue."}
+          </p>
+        </section>
+      ) : access === "admin" ? (
+        <section className="meetings-content" role="status">
+          <p>Admin access is required to create, edit, or delete meetings.</p>
+        </section>
+      ) : null}
+      {session?.user && <MeetingDetails meetings={meetings} />}
     </div>
   );
 }

@@ -1,9 +1,15 @@
+import { auth } from "@/auth";
 import { getMeetingById } from "../../../lib/meetings-db";
 
 export async function GET(
 	_request: Request,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
+	const session = await auth();
+	if (!session?.user) {
+		return Response.json({ error: "Sign in to view meetings." }, { status: 401 });
+	}
+
 	const { id } = await params;
 
 	if (!/^\d+$/.test(id)) {

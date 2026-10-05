@@ -22,20 +22,28 @@ const authConfig = {
         },
         authorized({ auth, request: { nextUrl } }) {
             const pathname = nextUrl.pathname;
-            const isProtectedRoute =
+            const isMeetingRoute =
+                pathname === "/meetings" || pathname.startsWith("/meetings/");
+            const isAdminRoute =
                 pathname === "/meetings/new" ||
                 /^\/meetings\/[^/]+\/edit\/?$/.test(pathname);
 
-            if (!isProtectedRoute) {
+            if (!isMeetingRoute) {
                 return true;
             }
 
             if (!auth?.user) {
-                return false;
+                const homeUrl = nextUrl.clone();
+                homeUrl.pathname = "/";
+                homeUrl.search = "?access=signin";
+                return Response.redirect(homeUrl);
             }
 
-            if (auth.user.role !== "admin") {
-                return Response.redirect(new URL("/", nextUrl));
+            if (isAdminRoute && auth.user.role !== "admin") {
+                const homeUrl = nextUrl.clone();
+                homeUrl.pathname = "/";
+                homeUrl.search = "?access=admin";
+                return Response.redirect(homeUrl);
             }
 
             return true;

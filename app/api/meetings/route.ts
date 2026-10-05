@@ -1,6 +1,12 @@
+import { auth } from "@/auth";
 import { getMeetings } from "../../lib/meetings-db";
 
 export async function GET(request: Request) {
+	const session = await auth();
+	if (!session?.user) {
+		return Response.json({ error: "Sign in to view meetings." }, { status: 401 });
+	}
+
 	const searchParams = new URL(request.url).searchParams;
 	const query = searchParams.get("query") ?? "";
 	const date = searchParams.get("date") ?? undefined;
