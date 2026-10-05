@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import MeetingDetail from "../../../components/MeetingDetail";
 import type { SacramentMeeting } from "../../../lib/types";
 import { getApiUrl } from "../../../lib/server-api";
+import { auth } from "@/auth";
 
 export default async function MeetingPage({ params }: {
     params: Promise<{ id: string }>;
@@ -21,6 +22,7 @@ export default async function MeetingPage({ params }: {
     }
 
     const meeting: SacramentMeeting = await response.json();
+    const session = await auth();
 
     return (
         <main className="meetings-content">
@@ -30,9 +32,11 @@ export default async function MeetingPage({ params }: {
                 <h1>{meeting.meetingType} meeting</h1>
             </div>
             <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-                <Link className="text-link" href={`/meetings/${meeting.id}/edit`}>
-                    Edit meeting
-                </Link>
+                {session?.user.role === "admin" && (
+                    <Link className="text-link" href={`/meetings/${meeting.id}/edit`}>
+                        Edit meeting
+                    </Link>
+                )}
             </div>
             <MeetingDetail meeting={meeting} />
         </main>

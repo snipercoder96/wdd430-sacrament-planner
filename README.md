@@ -2,6 +2,18 @@
 
 - This sacrament planner was made by Kevin Mbemba Kiyindou
 
+## Accounts and roles
+
+Anyone can create an account at `/auth/signup`. Passwords are bcrypt-hashed before they are saved, and public sign-ups receive the `visitor` role. To grant admin access, update the account's role in the Neon database:
+
+```sql
+UPDATE users
+SET role = 'admin'
+WHERE email = 'admin@example.com';
+```
+
+The account must sign out and back in for the new role to take effect in its session.
+
 ## Color Schemes
 ### Background color
 - Background: #F9FAFB
@@ -25,5 +37,4 @@
 - Title Text: Charcoal #111827
 
 - Meta Text (date, type): Slate Gray #6B7280
-
 

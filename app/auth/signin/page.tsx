@@ -1,4 +1,5 @@
 import SignInForm from "@/app/components/SignInForm";
+import Link from "next/link";
 
 export default function SignInPage() {
     return (
@@ -8,6 +9,10 @@ export default function SignInPage() {
                 <h1>Sign in</h1>
             </div>
             <SignInForm />
+            <p>
+                New here?{" "}
+                <Link className="text-link" href="/auth/signup">Create an account</Link>
+            </p>
         </section>
     );
 }

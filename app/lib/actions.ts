@@ -1,22 +1,101 @@
 "use server";
 
+import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth, signIn } from "../../auth";
 import { AuthError } from "next-auth";
+import { z } from "zod";
 import { meetingSchema } from "./meeting-schema";
 import { addMeeting, deleteMeeting, updateMeeting } from "./meetings-db";
+import { createVisitorUser } from "./users-db";
 
 export type FormState = {
     errors?: Record<string, string>;
     message?: string;
 };
 
-async function requireAuthenticatedUser(): Promise<void> {
+const signupSchema = z.object({
+    name: z.string().trim().min(2, "Name must be at least 2 characters.").max(100),
+    email: z.string().trim().toLowerCase().email("Enter a valid email address.").max(254),
+    password: z
+        .string()
+        .min(12, "Password must be at least 12 characters.")
+        .max(72, "Password must be no more than 72 characters.")
+        .refine(
+            (password) => Buffer.byteLength(password, "utf8") <= 72,
+            "Password must be no more than 72 UTF-8 bytes."
+        ),
+});
+
+async function requireAdmin(): Promise<void> {
     const session = await auth();
     if (!session?.user) {
         redirect("/auth/signin");
     }
+
+    if (session.user.role !== "admin") {
+        redirect("/");
+    }
+}
+
+export async function signUpAction(
+    _prevState: FormState,
+    formData: FormData
+): Promise<FormState> {
+    const parsed = signupSchema.safeParse({
+        name: formData.get("name"),
+        email: formData.get("email"),
+        password: formData.get("password"),
+    });
+
+    if (!parsed.success) {
+        const errors: Record<string, string> = {};
+        for (const issue of parsed.error.issues) {
+            const field = issue.path[0];
+            if (typeof field === "string" && !errors[field]) {
+                errors[field] = issue.message;
+            }
+        }
+
+        return { errors, message: "Please correct the highlighted fields." };
+    }
+
+    const { name, email, password } = parsed.data;
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    let created: boolean;
+    try {
+        created = await createVisitorUser(name, email, passwordHash);
+    } catch (error) {
+        console.error("Failed to create user account", error);
+        throw new Error("Unable to create your account. Please try again.");
+    }
+
+    if (!created) {
+        return {
+            errors: { email: "An account with this email already exists." },
+            message: "Please use a different email address or sign in.",
+        };
+    }
+
+    try {
+        await signIn("credentials", {
+            email,
+            password,
+            redirectTo: "/",
+        });
+    } catch (error) {
+        if (error instanceof AuthError) {
+            return {
+                message: "Your account was created, but sign-in failed. Please sign in.",
+            };
+        }
+
+        throw error;
+    }
+
+    return {};
 }
 
 function parseMeetingFormData(formData: FormData) {
@@ -82,7 +161,7 @@ export async function createMeetingAction(
     _prevState: FormState,
     formData: FormData
 ): Promise<FormState> {
-    await requireAuthenticatedUser();
+    await requireAdmin();
 
     const raw = parseMeetingFormData(formData);
     const parsed = meetingSchema.safeParse(raw);
@@ -107,7 +186,7 @@ export async function updateMeetingAction(
     _prevState: FormState,
     formData: FormData
 ): Promise<FormState> {
-    await requireAuthenticatedUser();
+    await requireAdmin();
 
     const raw = parseMeetingFormData(formData);
     const parsed = meetingSchema.safeParse(raw);
@@ -137,16 +216,23 @@ export async function updateMeetingAction(
 }
 
 export async function deleteMeetingAction(meetingId: number) {
-    await requireAuthenticatedUser();
+    await requireAdmin();
 
+    let deleted: boolean;
     try {
-        await deleteMeeting(meetingId);
+        deleted = await deleteMeeting(meetingId);
     } catch (error) {
         console.error("Failed to delete meeting", error);
         throw new Error("Unable to delete the meeting. Please try again.");
     }
 
+    if (!deleted) {
+        throw new Error("Meeting not found; nothing was deleted.");
+    }
+
+    revalidatePath("/");
     revalidatePath("/meetings");
+    revalidatePath(`/meetings/${meetingId}`);
     redirect("/meetings");
 }
 
@@ -158,7 +244,11 @@ export async function authenticate(
     formData: FormData
 ): Promise<string | undefined> {
     try {
-        await signIn("credentials", formData);
+        await signIn("credentials", {
+            email: formData.get("email"),
+            password: formData.get("password"),
+            redirectTo: "/",
+        });
     } catch (error) {
         if (error instanceof AuthError) {
             if (error.type === "CredentialsSignin") {
